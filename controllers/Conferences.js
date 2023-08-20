@@ -51,7 +51,45 @@ const addConference = async (req, res) => {
   }
 };
 
+/**
+ * Function to get the wordpress url of a specific conference
+ * @param {number} conferenceId
+ * @returns {string} Wordpress url. Example: https://hweitian.com
+ */
+const getConferenceUrl = async (conferenceId) => {
+  try {
+    const url = await Conference.findByPk(conferenceId, {
+      attributes: ["wordpressUrl"],
+    });
+    const urlJson = url.toJSON();
+    const wordPressUrl = urlJson.wordpressUrl;
+    return wordPressUrl;
+  } catch (e) {
+    console.log("error", e);
+  }
+};
+
+/**
+ * Function to get the latest conference that is added to the database.
+ * @returns {Array} An array of object.
+ * Contains information of the latest conference added to database.
+ */
+const getLatestConference = async () => {
+  try {
+    const latestConferenceData = await Conference.findAll({
+      limit: 1,
+      order: [["startDate", "DESC"]],
+    });
+    const latestConference = JSON.parse(JSON.stringify(latestConferenceData));
+    return latestConference;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+};
+
 module.exports = {
   getConferences,
   addConference,
+  getConferenceUrl,
+  getLatestConference,
 };
